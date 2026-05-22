@@ -1,0 +1,62 @@
+-- Análise de E-commerce Olist
+-- Autor: Maria Clara de Sousa Barbosa
+-- Ferramenta: SQLite / DB Browser for SQLite
+
+-- =============================================
+-- 1. DISTRIBUIÇÃO DE PEDIDOS POR STATUS
+-- =============================================
+SELECT order_status, COUNT(*) AS total
+FROM olist_orders_dataset
+GROUP BY order_status
+ORDER BY total DESC;
+
+-- =============================================
+-- 2. CATEGORIAS MAIS VENDIDAS
+-- =============================================
+SELECT 
+    products.product_category_name,
+    COUNT(order_items.product_id) AS vendas
+FROM olist_products_dataset AS products
+JOIN olist_order_items_dataset AS order_items 
+    ON products.product_id = order_items.product_id
+GROUP BY products.product_category_name
+ORDER BY vendas DESC
+LIMIT 10;
+
+-- =============================================
+-- 3. TICKET MÉDIO DOS PEDIDOS
+-- =============================================
+SELECT ROUND(AVG(total_pedido), 2) AS ticket_medio
+FROM (
+    SELECT order_id, SUM(price) AS total_pedido
+    FROM olist_order_items_dataset
+    GROUP BY order_id
+);
+
+-- =============================================
+-- 4. TOP 5 ESTADOS COM MAIS CLIENTES
+-- =============================================
+SELECT customer_state, COUNT(*) AS total_clientes
+FROM olist_customers_dataset
+GROUP BY customer_state
+ORDER BY total_clientes DESC
+LIMIT 5;
+
+-- =============================================
+-- 5. RECEITA TOTAL
+-- =============================================
+SELECT ROUND(SUM(price), 2) AS receita_total
+FROM olist_order_items_dataset;
+
+-- =============================================
+-- 6. PEDIDOS POR ESTADO
+-- =============================================
+SELECT 
+    customers.customer_state,
+    COUNT(orders.order_id) AS total_pedidos
+FROM olist_customers_dataset AS customers
+JOIN olist_orders_dataset AS orders
+    ON customers.customer_id = orders.customer_id
+GROUP BY customers.customer_state
+ORDER BY total_pedidos DESC
+LIMIT 5;
